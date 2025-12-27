@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,12 +21,14 @@ public class TestController {
 
     @GetMapping("/helloWorld")
     @Operation(summary = "Zwraca \"Hello World!\"")
+    @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
     public String helloWorld() {
         return "Hello World!";
     }
 
     @GetMapping("/loremIpsum")
     @Operation(summary = "Zwraca określoną parametrem iloscZnakow długość Lorem Ipsum")
+    @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
     @ApiResponse(responseCode = "200", description = "Ok", content = @Content(examples = @ExampleObject(value = "Lorem ipsum dolor sit amet")))
     @ApiResponse(responseCode = "403", description = "Nie zalogowano", content = @Content(examples = @ExampleObject(value = "{\n\"status\": 403,\n\"error\": \"Forbidden\n\"}")))
     public String lorem(
