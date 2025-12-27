@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -43,7 +44,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Loguje użytkownika na podstawie email i haslo", description = "Do logowania korzystamy z <b>tokenów JWT.</b> \n\n Aby zalogować, wysyłamy zapytanie na to API podając email i hasło w body. Jeśli dane są poprawne w odpowiedzi dostaniemy token JWT, który należy zapisać i dołączać do wszystkich zapytań wymagających logowania. \n\n Token taki ważny jest 10 godzin. ")
+    @Operation(summary = "Loguje użytkownika na podstawie email i haslo", description = "Do logowania korzystamy z <b>tokenów JWT.</b> \n\n Aby zalogować, wysyłamy zapytanie na to API podając email i hasło w body. Jeśli dane są poprawne w odpowiedzi dostaniemy token JWT, który należy zapisać i dołączać do wszystkich zapytań wymagających logowania. \n\n Token taki ważny jest 10 godzin. \n\n Aby wysyłać zapytania autoryzowane w GUI Swaggera należy wstawić odpowiedź tego API do pola Authorize. ")
+    @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
     @ApiResponse(responseCode = "200", description = "Zalogowano! Zwracam token JWT", content = @Content(examples = @ExampleObject(value = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW4ua293YWxza2lAZXhhbXBsZS5jb20iLCJpYXQiOjE3NjUzODIyMjYsImV4cCI6MTc2NTQxODIyNn0.U78Za49A6YAsuzZeY5bB8E2YTcNS07ERcsWdVxT7xgI")))
     @ApiResponse(responseCode = "401", description = "Nie zalogowano - Błędne dane", content = @Content(examples = @ExampleObject(value = "Błędne hasło lub email")))
     @ApiResponse(responseCode = "500", description = "Nie zalogowano - Inny błąd", content = @Content(schema = @Schema(hidden = true)))
