@@ -142,23 +142,23 @@ class UserResponse {
     private int poziomlojalnosciowy;
 }
 
-    @Data
-    @AllArgsConstructor
-    class EmployeeResponse {
-        @Getter
-        @Setter
-        @Schema(example = "Piotr")
-        private String imie;
-        @Getter
-        @Setter
-        @Schema(example = "Kasprzak")
-        private String nazwisko;
-        @Getter
-        @Setter
-        @Schema(example = "Kasjer")
-        private String rolapracownika;
-        @Getter
-        @Setter
-        @Schema(example = "true")
-        private boolean czyaktwny;
-    }
+@Data
+@AllArgsConstructor
+class EmployeeResponse {
+    @Getter
+    @Setter
+    @Schema(example = "Piotr")
+    private String imie;
+    @Getter
+    @Setter
+    @Schema(example = "Kasprzak")
+    private String nazwisko;
+    @Getter
+    @Setter
+    @Schema(example = "Kasjer")
+    private String rolapracownika;
+    @Getter
+    @Setter
+    @Schema(example = "true")
+    private boolean czyaktwny;
+}
