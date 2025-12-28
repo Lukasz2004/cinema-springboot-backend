@@ -13,6 +13,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.info.BuildProperties;
 
 @Configuration
 public class OpenApiConfig {
@@ -20,7 +21,7 @@ public class OpenApiConfig {
     private static final String SECURITY_SCHEME_NAME = "bearerAuth";
 
     @Bean
-    public OpenAPI customOpenAPI() {
+    public OpenAPI customOpenAPI(BuildProperties buildProperties) {
         var schemaMap = ModelConverters.getInstance()
                 .readAllAsResolvedSchema(ErrorResponse.class);
         Schema errorResponseSchema = schemaMap.schema;
@@ -28,7 +29,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Absolute Cinema API")
-                        .version("0.1.0")
+                        .version(buildProperties.getVersion())
                         .description("System rezerwacji kinowej dla kina Absolute Cinema. "))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()
@@ -40,6 +41,17 @@ public class OpenApiConfig {
                                         .bearerFormat("JWT")
                         )
                         .addSchemas("ErrorResponse", errorResponseSchema)
+                        .addResponses("Forbidden", new ApiResponse()
+                                .description("Brak dostępu. Nie poprawny, bądź brak załączonego tokena JWT.")
+                                .content(new Content()
+                                        .addMediaType("application/json",
+                                                new MediaType()
+                                                        .schema(new Schema<ErrorResponse>()
+                                                                .$ref("#/components/schemas/ErrorResponse")
+                                                        )
+                                        )
+                                )
+                        )
                         .addResponses("NotFound", new ApiResponse()
                                 .description("Nie znaleziono zasobu")
                                 .content(new Content()
@@ -69,6 +81,7 @@ public class OpenApiConfig {
     public OpenApiCustomizer globalResponsesCustomizer() {
         return openApi -> openApi.getPaths().values().forEach(pathItem ->
                 pathItem.readOperations().forEach(operation -> {
+                    operation.getResponses().addApiResponse("403", new ApiResponse().$ref("#/components/responses/Forbidden"));
                     operation.getResponses().addApiResponse("404", new ApiResponse().$ref("#/components/responses/NotFound"));
                     operation.getResponses().addApiResponse("500", new ApiResponse().$ref("#/components/responses/InternalError"));
                 })
