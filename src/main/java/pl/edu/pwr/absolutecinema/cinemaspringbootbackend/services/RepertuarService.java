@@ -26,7 +26,6 @@ public class RepertuarService {
     public List<Map<String, Object>> getRepertuar() {
         List<Map<String, Object>> repertuar = new ArrayList<>();
         repertuar.addAll(filmRepository.findAllActive());
-        System.out.println(repertuar);
         for(int i = 0; i < repertuar.size(); i++)
         {
             Map<String, Object> tempMap = repertuar.get(i);
@@ -38,8 +37,23 @@ public class RepertuarService {
             List<Map<String, Object>> viewings = seansRepository.findXForMovie(filmId, 5);
             tempMap.put("SEANSE", viewings);
 
+            tempMap.remove("REZYSERID");
 
-            tempMap.remove("FILMID");
+            repertuar.set(i, tempMap);
+        }
+        return repertuar;
+    }
+    public List<Map<String, Object>> getRepertuarShort() {
+        List<Map<String, Object>> repertuar = new ArrayList<>();
+        repertuar.addAll(filmRepository.findAllActive());
+        for(int i = 0; i < repertuar.size(); i++)
+        {
+            Map<String, Object> tempMap = repertuar.get(i);
+            BigDecimal filmId = (BigDecimal) tempMap.get("FILMID");
+
+            List<Map<String, Object>> languages = seansRepository.findAllLanguagesForMovie(filmId);
+            tempMap.put("JEZYKI", languages);
+
             tempMap.remove("REZYSERID");
 
             repertuar.set(i, tempMap);

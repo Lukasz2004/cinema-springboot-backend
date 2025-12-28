@@ -30,6 +30,9 @@ public class SeansRepository {
     public List<Map<String, Object>> findAllForMovie(BigDecimal filmID) {
         return jdbc.queryForList("SELECT * FROM V_AKTYWNESEANSE WHERE filmID = ? ", filmID);
     }
+    public List<Map<String, Object>> findAllLanguagesForMovie(BigDecimal filmID) {
+        return jdbc.queryForList("SELECT DISTINCT jezykSeansu, dubbingCzyNapisy FROM V_AKTYWNESEANSE WHERE filmID = ? ", filmID);
+    }
 
 
 }
