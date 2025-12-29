@@ -34,19 +34,22 @@ public class ReservationSystemController {
     public List<Map<String, Object>> listaPrzekasek() {
         return produktRepository.groupFilterId(produktRepository.findAll());
     }
+
     @GetMapping("/public/getRepertuar")
     @Operation(summary = "Zwraca pełen repertuar kina", description = "Zwraca wszystkie filmy w kinie posiadające aktualne seanse.\n\n Dodatkowo dołącza: dane reżysera, dane aktorów oraz dane z widoku v_AktywneSeanse dla maks 5 najświeższych seansów z każdego filmu.")
     @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
     public List<Map<String, Object>> getRepertuar() {
         return repertuarService.getRepertuar();
     }
+
     @GetMapping("/public/getSeanseForFilm/{id}")
-    @Operation(summary = "Zwraca określoną parametrem iloscRekodow seansów dla filmu o podanym parametrem id", description = "Załącza dane z widoku v_AktywneSeanse.")
+    @Operation(summary = "Zwraca określoną parametrem iloscRekodow seansów dla filmu o podanym parametrem id", description = "Załącza dane z widoku v_AktywneSeanse z przedziału <zaczynajacOd, zaczynajacOd+iloscRekordow>")
     @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
     public List<Map<String, Object>> getSeanseForFilm(@PathVariable int id,
-                                                      @Parameter(description = "Ilość znaków do zwrócenia. \n\n <b>-1 oznacza wszystkie możliwe</b>") @RequestParam(defaultValue = "-1") int iloscRekordow)
+                                                      @Parameter(description = "Od którego seansu zacząć.") @RequestParam(defaultValue = "0") int zaczynajacOd,
+                                                      @Parameter(description = "Ilość seansów do zwrócenia. \n\n <b>-1 oznacza wszystkie możliwe</b>") @RequestParam(defaultValue = "-1") int iloscRekordow)
     {
-        return seansRepository.findXForMovie(BigDecimal.valueOf(id),iloscRekordow);
+        return seansRepository.findXForMovie(BigDecimal.valueOf(id),zaczynajacOd, iloscRekordow);
     }
 
 }
