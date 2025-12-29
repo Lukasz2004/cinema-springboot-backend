@@ -1,6 +1,7 @@
 package pl.edu.pwr.absolutecinema.cinemaspringbootbackend;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,6 +22,11 @@ import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.auth.JwtService;
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.auth.Klient;
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.auth.UserRepository;
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.auth.*;
+import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.services.AuthService;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 
 @CrossOrigin(origins = "*")
@@ -33,14 +39,16 @@ public class AuthController {
     private final CustomUserDetailsService customUserDetailsService;
     private final UserRepository userRepository;
     private final EmployeeRepository employeeRepository;
+    private final AuthService authService;
 
     // Konstruktor
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, CustomUserDetailsService customUserDetailsService, UserRepository userRepository, EmployeeRepository employeeRepository) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, CustomUserDetailsService customUserDetailsService, UserRepository userRepository, EmployeeRepository employeeRepository,  AuthService authService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.customUserDetailsService = customUserDetailsService;
         this.userRepository = userRepository;
         this.employeeRepository = employeeRepository;
+        this.authService = authService;
     }
 
     @PostMapping("/login")
@@ -113,6 +121,16 @@ public class AuthController {
             );
             return ResponseEntity.ok(response);
         }
+    }
+    @PostMapping("/register")
+    @Operation(summary = "Rejestruje nowego klienta", description = "Wymaga wszystkich podanych parametrów. Waliduje ich poprawność.")
+    @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
+    public void registerUser(@Parameter(description = "Imię nowego klienta") @RequestParam String imie,
+                                                  @Parameter(description = "Nazwisko nowego klienta.") @RequestParam String nazwisko,
+                                                  @Parameter(description = "Adres email nowego klienta. Musi być unikalny.") @RequestParam String email,
+                                                  @Parameter(description = "Hasło nowego klienta w formie czystej. Zostanie zaszyfrowane.") @RequestParam String haslo)
+    {
+        authService.registerClient(imie,nazwisko,email,haslo);
     }
 }
 
