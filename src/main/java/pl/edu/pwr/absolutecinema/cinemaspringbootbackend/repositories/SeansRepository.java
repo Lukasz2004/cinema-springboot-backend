@@ -20,12 +20,12 @@ public class SeansRepository {
     public List<Map<String, Object>> findAll() {
         return jdbc.queryForList("SELECT * FROM seans");
     }
-    public List<Map<String, Object>> findXForMovie(BigDecimal filmID, int amount) {
+    public List<Map<String, Object>> findXForMovie(BigDecimal filmID, int start, int amount) {
         if(amount == -1)
         {
             return findAllForMovie(filmID);
         }
-        return jdbc.queryForList("SELECT * FROM V_AKTYWNESEANSE WHERE filmID = ? FETCH FIRST ? ROWS ONLY;", filmID, amount);
+        return jdbc.queryForList("SELECT * FROM V_AKTYWNESEANSE WHERE filmID = ? OFFSET ? FETCH FIRST ? ROWS ONLY;", filmID, start, amount);
     }
     public List<Map<String, Object>> findAllForMovie(BigDecimal filmID) {
         return jdbc.queryForList("SELECT * FROM V_AKTYWNESEANSE WHERE filmID = ? ", filmID);

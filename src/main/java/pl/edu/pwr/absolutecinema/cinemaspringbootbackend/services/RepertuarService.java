@@ -34,7 +34,7 @@ public class RepertuarService {
             tempMap.put("REZYSER", rezyserRepository.filterId(rezyserRepository.findById(rezyserId)));
             List<Map<String, Object>> actors = aktorRepository.findAllForMovie(filmId);
             tempMap.put("AKTORZY", actors);
-            List<Map<String, Object>> viewings = seansRepository.findXForMovie(filmId, 5);
+            List<Map<String, Object>> viewings = seansRepository.findXForMovie(filmId, 0,5);
             tempMap.put("SEANSE", viewings);
 
             tempMap.remove("REZYSERID");
