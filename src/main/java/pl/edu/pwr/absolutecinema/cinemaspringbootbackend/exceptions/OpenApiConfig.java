@@ -41,6 +41,17 @@ public class OpenApiConfig {
                                         .bearerFormat("JWT")
                         )
                         .addSchemas("ErrorResponse", errorResponseSchema)
+                        .addResponses("BadRequest", new ApiResponse()
+                                .description("Nie poprawne zapytanie, tworzące błąd bazy danych.")
+                                .content(new Content()
+                                        .addMediaType("application/json",
+                                                new MediaType()
+                                                        .schema(new Schema<ErrorResponse>()
+                                                                .$ref("#/components/schemas/ErrorResponse")
+                                                        )
+                                        )
+                                )
+                        )
                         .addResponses("Forbidden", new ApiResponse()
                                 .description("Brak dostępu. Nie poprawny, bądź brak załączonego tokena JWT.")
                                 .content(new Content()
@@ -81,6 +92,7 @@ public class OpenApiConfig {
     public OpenApiCustomizer globalResponsesCustomizer() {
         return openApi -> openApi.getPaths().values().forEach(pathItem ->
                 pathItem.readOperations().forEach(operation -> {
+                    operation.getResponses().addApiResponse("400", new ApiResponse().$ref("#/components/responses/BadRequest"));
                     operation.getResponses().addApiResponse("403", new ApiResponse().$ref("#/components/responses/Forbidden"));
                     operation.getResponses().addApiResponse("404", new ApiResponse().$ref("#/components/responses/NotFound"));
                     operation.getResponses().addApiResponse("500", new ApiResponse().$ref("#/components/responses/InternalError"));
