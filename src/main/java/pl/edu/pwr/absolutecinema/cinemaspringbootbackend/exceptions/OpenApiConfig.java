@@ -42,7 +42,7 @@ public class OpenApiConfig {
                         )
                         .addSchemas("ErrorResponse", errorResponseSchema)
                         .addResponses("BadRequest", new ApiResponse()
-                                .description("Nie poprawne zapytanie, tworzące błąd bazy danych.")
+                                .description("Niepoprawne zapytanie, tworzące błąd bazy danych.")
                                 .content(new Content()
                                         .addMediaType("application/json",
                                                 new MediaType()
