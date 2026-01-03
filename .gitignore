@@ -34,14 +34,5 @@ build/
 
 
 ### Wallet Files ###
-/src/main/resources/wallet/cwallet.sso
-/src/main/resources/wallet/cwallet.sso.lck
-/src/main/resources/wallet/ewallet.p12
-/src/main/resources/wallet/ewallet.p12.lck
-/src/main/resources/wallet/ewallet.pem
-/src/main/resources/wallet/keystore.jks
-/src/main/resources/wallet/ojdbc.properties
-/src/main/resources/wallet/README
-/src/main/resources/wallet/sqlnet.ora
-/src/main/resources/wallet/tnsnames.ora
-/src/main/resources/wallet/truststore.jks
+/src/main/resources/wallet/
+/wallet/
