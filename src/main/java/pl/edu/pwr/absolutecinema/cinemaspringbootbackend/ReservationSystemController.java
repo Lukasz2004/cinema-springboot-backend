@@ -30,7 +30,7 @@ public class ReservationSystemController {
     }
     @GetMapping("/public/przekaski")
     @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
-    @Operation(summary = "Zwraca wszystkie dostepne przekaski")
+    @Operation(summary = "Zwraca wszystkie dostępne przekąski")
     public List<Map<String, Object>> listaPrzekasek() {
         return produktRepository.groupFilterId(produktRepository.findAll());
     }
