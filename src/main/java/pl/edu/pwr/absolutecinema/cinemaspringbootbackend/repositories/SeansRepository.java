@@ -17,6 +17,9 @@ public class SeansRepository {
     public Map<String, Object> findById(BigDecimal seansID) {
         return jdbc.queryForMap("SELECT * FROM seans WHERE seansID = ?", seansID);
     }
+    public Map<String, Object> findTypeById(BigDecimal typSeansuID) {
+        return jdbc.queryForMap("SELECT * FROM TYPSEANSU WHERE TYPSEANSUID = ?", typSeansuID);
+    }
     public List<Map<String, Object>> findAll() {
         return jdbc.queryForList("SELECT * FROM seans");
     }

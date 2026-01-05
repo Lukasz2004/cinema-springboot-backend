@@ -3,11 +3,15 @@ package pl.edu.pwr.absolutecinema.cinemaspringbootbackend;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.repositories.ProduktRepository;
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.repositories.SeansRepository;
+import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.repositories.ZnizkaRepository;
+import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.services.AuthService;
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.services.RepertuarService;
+import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.services.TicketService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,16 +21,21 @@ import java.util.Map;
 @RequestMapping("/reservation")
 public class ReservationSystemController {
 
-    private final JdbcTemplate jdbcTemplate;
     private final RepertuarService repertuarService;
     private final ProduktRepository produktRepository;
     private final SeansRepository seansRepository;
+    private final AuthService authService;
+    private static final String securityNoticeString = "Do logowania korzystamy z <b>tokenów JWT.</b> \n\n Wymagane jest wcześniejsze zalogowanie klienta. Token do zapytania dołączamy jako header \"Authorization\" w formacie \"Bearer TOKEN\"";
+    private final TicketService ticketService;
+    private final ZnizkaRepository znizkaRepository;
 
-    public ReservationSystemController(JdbcTemplate jdbcTemplate, RepertuarService repertuarService, ProduktRepository produktRepository, SeansRepository seansRepository) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ReservationSystemController(RepertuarService repertuarService, ProduktRepository produktRepository, SeansRepository seansRepository, AuthService authService, TicketService ticketService, ZnizkaRepository znizkaRepository) {
         this.repertuarService = repertuarService;
         this.produktRepository = produktRepository;
         this.seansRepository = seansRepository;
+        this.authService = authService;
+        this.ticketService = ticketService;
+        this.znizkaRepository = znizkaRepository;
     }
     @GetMapping("/public/przekaski")
     @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
@@ -52,4 +61,28 @@ public class ReservationSystemController {
         return seansRepository.findXForMovie(BigDecimal.valueOf(id),zaczynajacOd, iloscRekordow);
     }
 
+    @GetMapping("/public/getZnizki")
+    @Operation(summary = "Zwraca wszystkie dostępne zniżki", description = "Zwraca całą zawartość tabeli RodzajeZniżek.")
+    @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
+    public List<Map<String, Object>> getZnizki()
+    {
+        return znizkaRepository.findAll();
+    }
+
+    @GetMapping("/getCennik/{idSeansu}")
+    @Operation(summary = "Zwraca cene danego seansu rozpisując wszystkie dostępne zniżki", description = "Zwraca całą zawartość tabeli RodzajeZniżek dodając do każdej pole CENA określające dokładną cene tego seansu używając tej zniżki.\n\n" + securityNoticeString)
+    public List<Map<String, Object>> getCennik(@Parameter(description = "idSeansu do sprawdzenia")@PathVariable int idSeansu,
+                                               @AuthenticationPrincipal UserDetails userDetails)
+    {
+        authService.verifyClient(userDetails);
+        return ticketService.getCennik(idSeansu);
+    }
+
+    @GetMapping("/getBiletyKlienta")
+    @Operation(summary = "Zwraca wszystkie bilety zalogowanego klienta", description = "Załącza dane z widoku v_RezerwacjeKlienta\n\n" + securityNoticeString)
+    public List<Map<String, Object>> getClientTickets(@AuthenticationPrincipal UserDetails userDetails)
+    {
+        int ClientId = authService.getClientId(userDetails);
+        return ticketService.getUserTickets(ClientId);
+    }
 }
