@@ -1,10 +1,13 @@
 package pl.edu.pwr.absolutecinema.cinemaspringbootbackend.services;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.math.BigDecimal;
 
 @Service
 public class AuthService {
@@ -39,6 +42,24 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Brak dostępu: Nie poprawny typ użytkownika");
         }
         return true;
+    }
+    public int getClientId(UserDetails userDetails)
+    {
+        verifyClient(userDetails);
+        try {
+            String email = userDetails.getUsername();
+            String sql = "SELECT klientID FROM Klient WHERE email = ?";
+            Integer id = jdbcTemplate.queryForObject(sql, Integer.class, email);
+
+            if (id == null) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Błąd danych: Znaleziono użytkownika, ale brak ID.");
+            }
+            return id;
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono profilu klienta w bazie danych.");
+        }
+
     }
     public void registerClient(String imie, String nazwisko, String email, String haslo)
     {
