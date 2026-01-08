@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.repositories.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +45,7 @@ public class TicketService {
             BigDecimal kwotaZnizki = procentZnizki.multiply(cenaKoncowa).divide(new BigDecimal(100));
             cenaKoncowa = cenaKoncowa.subtract(kwotaZnizki);
         }
-        return cenaKoncowa;
+        return cenaKoncowa.setScale(2, RoundingMode.HALF_UP);
     }
     public BigDecimal getCena(int seansId, int znizkaId)
     {
@@ -61,6 +63,9 @@ public class TicketService {
             znizka.put("CENA", cena);
             znizki.set(i, znizka);
         }
+        Map<String,Object> normalTicket = new HashMap<>();
+        normalTicket.put("CENA_NORMALNY", calculateCena(seans, seans));
+        znizki.add(normalTicket);
         return znizki;
     }
 }
