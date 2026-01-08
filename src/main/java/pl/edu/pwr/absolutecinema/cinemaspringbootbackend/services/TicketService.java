@@ -65,7 +65,7 @@ public class TicketService {
         }
         Map<String,Object> normalTicket = new HashMap<>();
         normalTicket.put("CENA_NORMALNY", calculateCena(seans, seans));
-        znizki.add(normalTicket);
+        znizki.add(0, normalTicket);
         return znizki;
     }
 }

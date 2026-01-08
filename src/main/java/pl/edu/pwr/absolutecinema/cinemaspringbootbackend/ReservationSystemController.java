@@ -70,7 +70,7 @@ public class ReservationSystemController {
     }
 
     @GetMapping("/getCennik/{idSeansu}")
-    @Operation(summary = "Zwraca cene danego seansu rozpisując wszystkie dostępne zniżki", description = "Zwraca całą zawartość tabeli RodzajeZniżek dodając do każdej pole CENA określające dokładną cene tego seansu używając tej zniżki.\n\n" + securityNoticeString)
+    @Operation(summary = "Zwraca cene danego seansu rozpisując wszystkie dostępne zniżki", description = "Zwraca całą zawartość tabeli RodzajeZniżek dodając do każdej pole CENA określające dokładną cene tego seansu używając tej zniżki. \n\nCena standardowa tego seansu (dla biletu normalnego) dodawana jest jako pierwszy element tablicy zniżek o jedynym polu \"CENA_NORMALNY\" \n\n" + securityNoticeString)
     public List<Map<String, Object>> getCennik(@Parameter(description = "idSeansu do sprawdzenia")@PathVariable int idSeansu,
                                                @AuthenticationPrincipal UserDetails userDetails)
     {
