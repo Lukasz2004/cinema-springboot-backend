@@ -28,7 +28,7 @@ public class SeansRepository {
         {
             return findAllForMovie(filmID);
         }
-        return jdbc.queryForList("SELECT * FROM V_AKTYWNESEANSE WHERE filmID = ? OFFSET ? ROWS FETCH FIRST ? ROWS ONLY ORDER BY dataCzas ASC", filmID, start, amount);
+        return jdbc.queryForList("SELECT * FROM V_AKTYWNESEANSE WHERE filmID = ? ORDER BY dataCzas ASC OFFSET ? ROWS FETCH FIRST ? ROWS ONLY", filmID, start, amount);
     }
     public List<Map<String, Object>> findAllForMovie(BigDecimal filmID) {
         return jdbc.queryForList("SELECT * FROM V_AKTYWNESEANSE WHERE filmID = ? ORDER BY dataCzas ASC", filmID);
