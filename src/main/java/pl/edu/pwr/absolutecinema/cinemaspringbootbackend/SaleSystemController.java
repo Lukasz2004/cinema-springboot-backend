@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import lombok.Data;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -98,6 +99,44 @@ public class SaleSystemController {
     {
         authService.verifyStaff(userDetails);
         return seansRepository.findXForMovie(BigDecimal.valueOf(id),zaczynajacOd, iloscRekordow);
+    }
+    @PostMapping("/sellTicket")
+    @Operation(summary = "Dokonuje sprzedaży biletu", description = "Tworzy nowe zamówienie i bilety na podane dane.\n\nW Request Body można opcjonalnie zawrzeć listę obiektów typu discountedTicketsDTO (Zobacz: discountedTicketsDTO) i/lub typu snacksDTO (Zobacz: snacksDTO)\n\nAby zobaczyć co dokładnie zwraca - zobacz: newOrderDTO.\n\n" + securityNoticeString)
+    public TicketService.newOrderDTO buyTicket(@Parameter(description = "Id seansu na który chcesz kupić") @RequestParam BigDecimal seansId,
+                                               @Parameter(description = "Karta/Gotówka") @RequestParam String paymentType,
+                                               @Parameter(description = "Email klienta jeśli chcemy mu podpiąć pod jego konto. Opcjonalne") @RequestParam(required = false) String klientEmail,
+                                               @Parameter(description = "Ile biletów normalnych. Musi być podana. Może być 0") @RequestParam BigDecimal normalTicketsAmount,
+                                               @RequestBody(required = false) SellTicketRequest requestBody,
+                                               @AuthenticationPrincipal UserDetails userDetails)
+    {
+        authService.verifyStaff(userDetails);
+        List<TicketService.discountedTicketsDTO> discountedTickets;
+        List<TicketService.snacksDTO> snacks;
+        if(requestBody != null)
+        {
+            discountedTickets = requestBody.getDiscountedTickets();
+            snacks = requestBody.getSnacks();
+        }
+        else
+        {
+            discountedTickets=null;
+            snacks=null;
+        }
+        BigDecimal klientId;
+        if(klientEmail != null)
+        {
+            klientId = BigDecimal.valueOf(authService.getClientIdFromEmail(klientEmail));
+        }
+        else {
+            klientId = null;
+        }
+        TicketService.newOrderDTO newOrder = ticketService.sellTickets(BigDecimal.valueOf(authService.getStaffId(userDetails)), klientId, seansId, normalTicketsAmount, paymentType, discountedTickets, snacks);
+        return newOrder;
+    }
+    @Data
+    public static class SellTicketRequest {
+        private List<TicketService.discountedTicketsDTO> discountedTickets;
+        private List<TicketService.snacksDTO> snacks;
     }
 
 }

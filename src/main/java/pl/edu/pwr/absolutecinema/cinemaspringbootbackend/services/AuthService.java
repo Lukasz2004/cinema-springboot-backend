@@ -46,8 +46,11 @@ public class AuthService {
     public int getClientId(UserDetails userDetails)
     {
         verifyClient(userDetails);
+        return getClientIdFromEmail(userDetails.getUsername());
+    }
+    public int getClientIdFromEmail(String email)
+    {
         try {
-            String email = userDetails.getUsername();
             String sql = "SELECT klientID FROM Klient WHERE email = ?";
             Integer id = jdbcTemplate.queryForObject(sql, Integer.class, email);
 
@@ -58,6 +61,26 @@ public class AuthService {
 
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono profilu klienta w bazie danych.");
+        }
+    }
+    public int getStaffId(UserDetails userDetails)
+    {
+        verifyStaff(userDetails);
+        return getStaffIdFromEmail(userDetails.getUsername());
+    }
+    public int getStaffIdFromEmail(String email)
+    {
+        try {
+            String sql = "SELECT pracownikID FROM Pracownik WHERE email = ?";
+            Integer id = jdbcTemplate.queryForObject(sql, Integer.class, email);
+
+            if (id == null) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Błąd danych: Znaleziono użytkownika, ale brak ID.");
+            }
+            return id;
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nie znaleziono profilu pracownika w bazie danych.");
         }
 
     }

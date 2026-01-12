@@ -3,7 +3,9 @@ package pl.edu.pwr.absolutecinema.cinemaspringbootbackend;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import lombok.Data;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.repositories.ProduktRepository;
@@ -14,6 +16,7 @@ import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.services.RepertuarServi
 import pl.edu.pwr.absolutecinema.cinemaspringbootbackend.services.TicketService;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -84,5 +87,30 @@ public class ReservationSystemController {
     {
         int ClientId = authService.getClientId(userDetails);
         return ticketService.getUserTickets(ClientId);
+    }
+    @PostMapping("/buyTicket")
+    @Operation(summary = "Dokonuje zakupu biletu", description = "Tworzy nowe zamówienie i bilety na podane dane.\n\nW Request Body można opcjonalnie zawrzeć listę obiektów typu discountedTicketsDTO (Zobacz: discountedTicketsDTO)\n\n Aby zobaczyć co dokładnie zwraca - zobacz: newOrderDTO. \n\n" + securityNoticeString)
+    public TicketService.newOrderDTO buyTicket(@Parameter(description = "Id seansu na który chcesz kupić") @RequestParam BigDecimal seansId,
+                                               @Parameter(description = "Przelew (jak płatność przelewem)/Kasa (jak płatność przy kasie)") @RequestParam String paymentType,
+                                               @Parameter(description = "Ile biletów normalnych. Musi być podana. Może być 0") @RequestParam BigDecimal normalTicketsAmount,
+                                               @RequestBody(required = false) BuyTicketRequest requestBody,
+                                               @AuthenticationPrincipal UserDetails userDetails)
+    {
+        List<TicketService.discountedTicketsDTO> discountedTickets;
+        if(requestBody != null)
+        {
+            discountedTickets = requestBody.getDiscountedTickets();
+        }
+        else
+        {
+            discountedTickets=null;
+        }
+        TicketService.newOrderDTO newOrder = ticketService.sellTickets(null, BigDecimal.valueOf(authService.getClientId(userDetails)), seansId, normalTicketsAmount, paymentType, discountedTickets, null);
+        return newOrder;
+    }
+
+    @Data
+    public static class BuyTicketRequest {
+        private List<TicketService.discountedTicketsDTO> discountedTickets;
     }
 }
