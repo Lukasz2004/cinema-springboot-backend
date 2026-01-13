@@ -60,4 +60,10 @@ public class RepertuarService {
         }
         return repertuar;
     }
+    public Map<String, Object> getInfoSeans(BigDecimal seansId)
+    {
+        Map<String, Object> seansInfo = seansRepository.findByIdExtended(seansId);
+        seansInfo.put("WOLNE_MIEJSCA",seansRepository.findAvailabilityById(seansId));
+        return seansInfo;
+    }
 }

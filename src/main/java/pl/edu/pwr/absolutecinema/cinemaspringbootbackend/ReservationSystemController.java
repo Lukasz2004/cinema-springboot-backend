@@ -63,7 +63,12 @@ public class ReservationSystemController {
     {
         return seansRepository.findXForMovie(BigDecimal.valueOf(id),zaczynajacOd, iloscRekordow);
     }
-
+    @GetMapping("/getSeansInfo/{idSeansu}")
+    @Operation(summary = "Zwraca szczegóły o konkretnym seansie", description = "Załącza dane z tabeli Seans: dataCzas, nazwa Filmu, czas trwania Filmu, nazwa Sali, nazwa Typu Seansu, językSeansu, dubbingCzyNapisy oraz cenaSpecjalna\n\n" + securityNoticeString)
+    public Map<String, Object> getSeansInfo(@Parameter(description = "Id seansu do sprawdzenia.") @PathVariable int idSeansu)
+    {
+        return repertuarService.getInfoSeans(BigDecimal.valueOf(idSeansu));
+    }
     @GetMapping("/public/getZnizki")
     @Operation(summary = "Zwraca wszystkie dostępne zniżki", description = "Zwraca całą zawartość tabeli RodzajeZniżek.")
     @SecurityRequirements //Info dla Swaggera: Nie wymaga Tokena
