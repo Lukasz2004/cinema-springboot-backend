@@ -73,7 +73,7 @@ public class SaleSystemController {
     @Operation(summary = "Zwraca wszystkie dostępne przekąski", description = securityNoticeString)
     public List<Map<String, Object>> listaPrzekasek(@AuthenticationPrincipal UserDetails userDetails) {
         authService.verifyStaff(userDetails);
-        return produktRepository.groupFilterId(produktRepository.findAll());
+        return produktRepository.findAll();
     }
     @GetMapping("/getZnizki")
     @Operation(summary = "Zwraca wszystkie dostępne zniżki", description = "Zwraca całą zawartość tabeli RodzajeZniżek.\n\n" + securityNoticeString)
